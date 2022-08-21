@@ -12,63 +12,25 @@ export default function CryptoSearchForm(){
 
   const [loadingButton, setLoadingButton] = useState(false)
 
-  const {handleTextSearch, textSearch, handleTrackedCoins, trackedCoins} = useCoin()
+  const {handleTextSearch, textSearch, getCoin} = useCoin()
 
-  async function getCoin(){
-    const { error, loading, data} = await client.query({query: GET_PRICE, variables: {textSearch}})
-    if(error) {
-      Swal.fire({
-      title: 'Error',
-      icon: 'error',
-      text: error.message
-    })
-    return
-  }
-    const { markets } = data
-    if(markets.length === 0) {
-      Swal.fire({
-      title: 'No coins found!',
-      icon: 'error'
-    })
-    return
-  }
-    const newCoin = markets[0]
-    const newCoinList: ICoin[] =[...trackedCoins, {name: textSearch, value: newCoin?.ticker?.lastPrice}]
-    handleTrackedCoins(newCoinList)
-  }
-
-  function verifyIfCoinAlreadyTracked(coinName: string){
-    return trackedCoins.some(coin => coin.name === coinName)
-  }
-
-  async function handleGetAndAddCoin(){
+  async function handleGetCoin(){
     setLoadingButton(true)
-    try{
-      const coinIsAlreadyTracked = verifyIfCoinAlreadyTracked(textSearch)
-      if(!coinIsAlreadyTracked) await getCoin()
-    }catch(err){
-      Swal.fire({
-        title: 'Unknown Error',
-        text: 'Please try again',
-        icon: 'error'
-      })
-    }finally{
-      handleTextSearch('')
-      setLoadingButton(false)
-    }
-    
+    await getCoin()
+    setLoadingButton(false)
   }
 
   return(
     <Card>
       <InputSearch 
         tabIndex={1}
+        onKeyDown={(e) => e.key === 'Enter' && handleGetCoin()}
         onChange={(e) => handleTextSearch(e.currentTarget.value)}
         value={textSearch}
         />
       <Button 
         text="Add" 
-        onClick={handleGetAndAddCoin}
+        onClick={handleGetCoin}
         tabIndex={2}
         loading={loadingButton}
         />
