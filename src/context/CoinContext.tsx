@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { ICoin } from "../global/interfaces";
 import { ICoinContext } from "./interface";
 
@@ -9,6 +9,17 @@ export default function CoinProvider({children}: {children: ReactNode}){
   const [textSearch, setTextSearch] = useState('')
   const [trackedCoins, setTrackedCoins] = useState<ICoin[]>([])
   const [isLoadingCoins, setIsLoadingCoins] = useState(false)
+
+  useEffect(()=>{
+    getCoinsFromLocalStorage()
+  }, [])
+
+  function getCoinsFromLocalStorage(){
+    const storage = localStorage.getItem('trackedCoins')
+    if(!storage || storage.length === 0) return
+    const storedTrackedCoins: ICoin[] = JSON.parse(storage)
+    handleTrackedCoins(storedTrackedCoins)
+  }
 
   function addLoading(){
     setIsLoadingCoins(true)
@@ -23,6 +34,7 @@ export default function CoinProvider({children}: {children: ReactNode}){
   }
 
   function handleTrackedCoins(newTrackedCoins: ICoin[]){
+    localStorage.setItem('trackedCoins', JSON.stringify(newTrackedCoins))
     setTrackedCoins(newTrackedCoins)
   }
 
