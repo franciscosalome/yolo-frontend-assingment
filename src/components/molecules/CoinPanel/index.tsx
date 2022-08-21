@@ -17,6 +17,7 @@ export default function CoinPanel(){
     <Container>
       {trackedCoins && trackedCoins.map(coin => (
         <CoinPanelItem 
+          key={coin.name}
           coin={coin}
           removeCoin={removeCoin}
           />

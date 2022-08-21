@@ -9,4 +9,6 @@ export interface ICoinContext {
   textSearch: string
   handleTrackedCoins: (newCoins: ICoin[]) => void
   getCoin: () => void
+  getCoinsList: () => void
+  listCoinNames: string[]
 }

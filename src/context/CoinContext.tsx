@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { ICoin } from "../global/interfaces";
-import { fetchCoin } from "../services/coins-service";
+import { fetchCoin, fetchListCoins } from "../services/coins-service";
 import { ICoinContext } from "./interface";
 
 const CoinContext = createContext({}as ICoinContext)
@@ -11,10 +11,16 @@ export default function CoinProvider({children}: {children: ReactNode}){
   const [textSearch, setTextSearch] = useState('')
   const [trackedCoins, setTrackedCoins] = useState<ICoin[]>([])
   const [isLoadingCoins, setIsLoadingCoins] = useState(false)
+  const [listCoinNames, setListCoinNames] = useState<string[]>([])
 
   useEffect(()=>{
     getCoinsFromLocalStorage()
   }, [])
+
+  useEffect(()=>{
+    setListCoinNames([])
+    if(textSearch.length > 0) getCoinsList()
+  }, [textSearch])
 
   function getCoinsFromLocalStorage(){
     const storage = localStorage.getItem('trackedCoins')
@@ -40,6 +46,23 @@ export default function CoinProvider({children}: {children: ReactNode}){
     setTrackedCoins(newTrackedCoins)
   }
 
+  async function getCoinsList(){
+    addLoading()
+    try{
+      const {data, error} = await fetchListCoins(textSearch)
+      if(error) return
+      const {markets} = data
+      if(markets.length > 0) {
+        const setOfCoins = new Set(markets.map(coin => coin.baseSymbol))
+       setListCoinNames([...setOfCoins])
+      }
+    }catch(err){
+      
+    }finally{
+      removeLoading()
+    }
+
+  }
 
   async function getCoin(){
     const isCoinAlreadyTracked = verifyIfCoinAlreadyTracked(textSearch)
@@ -55,7 +78,7 @@ export default function CoinProvider({children}: {children: ReactNode}){
       return
     }
       const { markets } = data
-      if(markets.length === 0) {
+      if(!markets.length) {
         Swal.fire({
         title: 'No coins found!',
         icon: 'error'
@@ -90,8 +113,9 @@ export default function CoinProvider({children}: {children: ReactNode}){
         trackedCoins,
         textSearch,
         handleTrackedCoins,
-        getCoin
-
+        getCoin,
+        getCoinsList,
+        listCoinNames
       }}>
         {children}
       </CoinContext.Provider>
