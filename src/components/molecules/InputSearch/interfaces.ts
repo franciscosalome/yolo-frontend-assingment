@@ -1,5 +1,6 @@
-export interface InputSearchProps {
+import React, { HTMLInputTypeAttribute } from "react"
+
+export interface InputSearchProps extends React.HTMLAttributes<HTMLInputElement> {
   tabIndex?: number
-  onChangeText: (newText: string) => void
   value: string
 }

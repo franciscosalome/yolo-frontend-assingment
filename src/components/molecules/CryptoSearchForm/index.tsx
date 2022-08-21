@@ -63,7 +63,7 @@ export default function CryptoSearchForm(){
     <Card>
       <InputSearch 
         tabIndex={1}
-        onChangeText={(e)=> handleTextSearch(e)} 
+        onChange={(e) => handleTextSearch(e.currentTarget.value)}
         value={textSearch}
         />
       <Button 
