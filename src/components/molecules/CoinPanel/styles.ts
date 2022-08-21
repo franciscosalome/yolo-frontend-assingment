@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.section`
   overflow-y: auto;
-  max-height: 15%;
+  max-height: 30vh;
   margin-bottom: 25px;
 
   ::-webkit-scrollbar {

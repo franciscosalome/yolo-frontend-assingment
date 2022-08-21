@@ -32,6 +32,18 @@ export const InputContainer = styled.div`
   ul {
     width: 100%;
     list-style-type: none;
+    max-height: 500px;
+    overflow-y: auto;
+    
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: rgba(0,0,0,0.2);
+   }
+   
+  ::-webkit-scrollbar-thumb { 
+    background-color: var(--secondary); 
+    border-radius: 3px;
+  }
     li{
       cursor: pointer;
       padding: 0 0.75rem;
